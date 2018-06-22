@@ -1,0 +1,121 @@
+extends layout
+
+block header
+  link(type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/basic/jquery.qtip.min.css")
+  link(type="text/css" rel="stylesheet" href="/swsdvolcal/vis/vis.css")
+
+block content
+  p#neededyet 
+  br
+  #timeline
+    .menu
+      input#zoomIn(type="button", value="Zoom in")
+      input#zoomOut(type="button", value="Zoom out")
+      input#moveLeft(type="button", value="Move left")
+      input#moveRight(type="button", value="Move right")
+  // should use cdn for vis.js
+  script(src="/swsdvolcal/vis/vis.js")
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/basic/jquery.qtip.min.js")
+  script
+    | // ts returns a timestamp i like
+    | function ts(date) {
+    |   const event = (date===undefined) ? new Date() : new Date(date);
+    |   return event.toLocaleDateString(undefined, {weekday:'short', month:'short', day:'numeric'}) + " - " + event.toLocaleTimeString(undefined, {hour:'numeric', minute:'numeric'})
+    | };
+    | function tip(row) {
+    |   var ret  = "";
+    |   if(row['First Name']) {
+    |     ret = row['First Name'] + " ";
+    |   }
+    |   if(row['Last Name']) {
+    |     ret += row['Last Name'];
+    |   }
+    |   if(ret) {
+    |     ret = 'Name: ' + ret + '<br>';
+    |   }
+    |   if(row['Email']) {
+    |     ret +=
+    |       'Email: ' + row['Email'] + '<br>' +
+    |       'Volunteer Identifier: ' + row['Volunteer Identifier'] + '<br>' +
+    |       'Signup Date: ' + ts(row['Signup Date'] + ' ' + row['Signup Time']) + '<br>';
+    |   } else {
+    |     ret += 'Volunteer needed!<br>';
+    |   }
+    |   ret +=
+    |     'Job: ' + row['Job'] + '<br>' +
+    |     'Job Location: ' + row['Job Location'] + '<br>' +
+    |     'Job Description: ' + row['Job Description'] + '<br>' +
+    |     'Shift start: ' + ts(row['Shift start date'] + ' ' + row['Shift start time']) + '<br>' +
+    |     'Shift end: ' + ts(row['Shift end date'] + ' ' + row['Shift end time']);
+    |   return ret;
+    | }
+    |
+    | const url = '/swsdvolcal/getdata';
+    | fetch(url, {credentials: 'include'})
+    |   .then(response => response.json()) // start fetching data right away but wait until doc is loaded to start drawing
+    |   .then(json     => document.addEventListener('DOMContentLoaded', drawTimeline(json), false))
+    |   .catch(err     => console.error(err));
+    |
+    | function drawTimeline(data) {
+    |   data.options["groupOrder"] = 'content';  // add to our options. groupOrder can be a property name or a sorting function
+    |   data.options["orientation"] = {axis: 'both'};  // add to our options. groupOrder can be a property name or a sorting function
+    |   data.options["onInitialDrawComplete"] = function() {
+    |     $( "div.vis-item" ).qtip({
+    |       content: {
+    |         text: function(event, api) { 
+    |           // this seems like a lot of work to get this info. :/
+    |           const myid = Array.from(event.currentTarget.classList).filter(d=>d.startsWith("vis-item-id_")).toString().split("_")[1];
+    |           const url = '/swsdvolcal/getdata/' + myid;
+    |           $.ajax({
+    |             url: url,
+    |             type: 'GET',
+    |             dataType: 'json',
+    |             data: {
+    |                 id: $(this).attr('id') // this is the qTip id, not the timeline id. sigh.
+    |               }
+    |           })
+    |           .then(function(data) {
+    |             api.set('content.text', tip(data));
+    |           }, function(xhr, status, error) {
+    |             api.set('content.text', status + ': ' + error);
+    |           });
+    |           return 'Loading...'
+    |         }
+    |       },
+    |       position: {
+    |         my: 'top left',
+    |         at: 'bottom center'
+    |         //target: $('.selector')
+    |       },
+    |       style: { classes: 'qtip-blue'      },
+    |       show:  { event: 'click mouseenter' }
+    |     }); // ob jquery function
+    |   };
+    |   const container = document.getElementById('timeline')
+    |   const items  = new vis.DataSet(data.items);
+    |   const groups = new vis.DataSet(data.groups);
+    |   var timeline = new vis.Timeline(container, items, data.options);
+    |   timeline.setGroups(groups);
+    |
+    |   // Move the timeline a given percentage (sic) to left or right
+    |   // @param {Number} percentage   For example 0.1 (left) or -0.1 (right)
+    |   function move (percentage) {
+    |     var range = timeline.getWindow();
+    |     var interval = range.end - range.start;
+    |     timeline.setWindow({
+    |         start: range.start.valueOf() - interval * percentage,
+    |         end:   range.end.valueOf()   - interval * percentage
+    |     });
+    |   };
+    |
+    |   // attach events to the navigation buttons
+    |   document.getElementById('zoomIn').onclick    = function () { timeline.zoomIn( 0.2); };
+    |   document.getElementById('zoomOut').onclick   = function () { timeline.zoomOut( 0.2); };
+    |   document.getElementById('moveLeft').onclick  = function () { move( 0.2); };
+    |   document.getElementById('moveRight').onclick = function () { move(-0.2); };
+    |   // put in the totals
+    |   document.getElementById('neededyet').innerHTML = 
+    |       data.totals.have + " of " + data.totals.want + " positions filled<br>" + (data.totals.want-data.totals.have) + " still needed";
+    | 
+    |   return;
+    | }

@@ -1,0 +1,27 @@
+doctype html
+html
+  head
+    //- mandatory things go here
+    title= title
+    link(rel="icon" href="https://startupsd.org/wp-content/uploads/2017/04/StartupSD-2017-SDSW-San-Diego-Startup-Week-2017-Entrepreneur-Developer-Speaker-Community-Event_Favicon.png" type="image/png")
+    link(rel="icon" href="https://startupsd.org/wp-content/uploads/2017/04/cropped-StartupSD-2017-SDSW-San-Diego-Startup-Week-2017-Entrepreneur-Developer-Speaker-Community-Event_Favicon-32x32.png" sizes="32x32")
+    link(rel="icon" href="https://startupsd.org/wp-content/uploads/2017/04/cropped-StartupSD-2017-SDSW-San-Diego-Startup-Week-2017-Entrepreneur-Developer-Speaker-Community-Event_Favicon-192x192.png" sizes="192x192")
+    link(rel="apple-touch-icon-precomposed" href="https://startupsd.org/wp-content/uploads/2017/04/cropped-StartupSD-2017-SDSW-San-Diego-Startup-Week-2017-Entrepreneur-Developer-Speaker-Community-Event_Favicon-180x180.png")
+    meta(name="msapplication-TileImage" content="https://startupsd.org/wp-content/uploads/2017/04/cropped-StartupSD-2017-SDSW-San-Diego-Startup-Week-2017-Entrepreneur-Developer-Speaker-Community-Event_Favicon-270x270.png")
+    script(src="https://code.jquery.com/jquery-3.3.1.min.js")
+
+    block header
+      //- optional things go here
+
+    //- put this last
+    link(type="text/css" rel="stylesheet" href="/swsdvolcal/css/style.css")
+    
+  body
+    //- mandatory things go here
+    h1 Startup Week San Diego
+    h3= title
+    p Current as of 
+      include current.txt
+
+    //- optional things go here
+    block content

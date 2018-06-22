@@ -1,0 +1,52 @@
+body {
+  background: aliceblue;
+  color: #222;
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+.need {
+  background: lightcoral;
+}
+
+#timeline {
+  position: relative;
+  background: white;
+}
+
+.vis-labelset {
+  font-weight: bold;
+}
+
+.evenrow {
+  background: rgba(191, 191, 191, 0.15);
+}
+
+.oddrow {
+  background: rgba(225, 225, 225, 0.15);
+}
+
+.needabody {
+  background: salmon;
+}
+
+.vis-panel.vis-background.vis-vertical .vis-time-axis .vis-grid.vis-even {
+  background: #EEF;
+}
+
+.vis-time-axis .vis-grid.vis-odd {
+  background: #EFF;
+}
+
+.vis-label {
+  opacity: 1;
+}
+
+#timeline .menu {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin: 10px;
+  z-index: 9999;
+}
+

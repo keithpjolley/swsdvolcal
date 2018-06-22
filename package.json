@@ -1,0 +1,23 @@
+{
+  "name": "sdswvolview",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "all": "0.0.0",
+    "body-parser": "~1.18.2",
+    "cookie-parser": "~1.4.3",
+    "d3-dsv": "^1.0.8",
+    "datatables": "^1.10.18",
+    "debug": "~2.6.9",
+    "express": "^4.16.3",
+    "express-basic-auth": "^1.1.5",
+    "helmet": "^3.12.1",
+    "morgan": "~1.9.0",
+    "node-fetch-polyfill": "^2.0.6",
+    "pug": "2.0.0-beta11",
+    "vis": "^4.21.0"
+  }
+}
