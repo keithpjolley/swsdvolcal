@@ -2,3 +2,11 @@ data/data*
 data/san-diego-startup-week-2018*
 credentials.js
 node_modules/
+public/js/buttons.flash.min.js
+public/js/buttons.html5.min.js
+public/js/buttons.print.min.js
+public/js/jszip.min.js
+public/js/pdfmake.min.js
+public/js/pdfmake.min.js.map
+public/js/vfs_fonts.js
+
