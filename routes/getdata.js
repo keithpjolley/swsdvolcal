@@ -1,8 +1,7 @@
 const express = require('express');
 const path    = require('path');
-const fs      = require('fs');
-const tsvParse = require('d3-dsv').tsvParse;
-const router  = express.Router({mergeParams:true});
+const fs      = require('fs'); const tsvParse = require('d3-dsv').tsvParse; const router  = express.Router({mergeParams:true});
+const oneday  = 24*60*60*1000;
 
 var rawData;
 
@@ -10,38 +9,53 @@ var rawData;
 router.get('/', function(req, res, next) {
   // this is stupid. we're just making shit up now. this is a clone of rawData
   var data = rawData.map(d => {return {...d}});
-  if(/^\d+$/.test(req.params.id)) {
+  if(/^-?\d+$/.test(req.params.id)) {
     const getID = +req.params.id;
     if(getID>0) {
       res.json(rawData.filter(function(d){return +d.id==getID})[0] || {error:"no such id"});
+    } else if(getID<0) {
+      res.json(makeBackgroundItems(data));
     } else {
       res.json(tablify(data));
     }
   } else {
-    res.json(mogrify(data));
+    res.json(timelineify(data));
   }
   return;
 });
 
 function myDate(d) {
   const date = new Date(d);
-  const secs = date.valueOf();
-  const dstr = date.toLocaleString(undefined, {weekday:'short',hour:'numeric',minute:'numeric'});
-  return '<span style="display:none;">' + secs + '</span>' + dstr;
+  const secs = date.valueOf(); // secs since epoch. this makes sorting the columns super easy.
+  const dateStr = date.toString();
+  const longDay = date.toLocaleString(undefined, {weekday:'long'});
+  // sort by seconds since epoch, add a bunch of date info to make it easy to filter.
+  const sortStr  = '<span class="timesort">' + secs + ' ' + dateStr + ' ' + longDay + '</span>';
+  // display minimum date, include full time string on hover
+  const displaytime = '<time datetime="' + dateStr + '">'
+    + date.toLocaleString(undefined, {weekday:'short', hour:'numeric', minute:'numeric'})
+    + '</time>';
+  const hovertext = '<div class="hovertext">' + dateStr + '</div>';
+  return '<div class="timefield">' + sortStr + displaytime + hovertext + '</div>';
 }
 
 // create data for a datatable
 function tablify(data) {
   // combine data/time
   data.map(row => {
-    row["Volunteer Name"] =  (row["Last Name"]) ? ('<span style="display:none;">' + row["Last Name"] + '</span>' + row["First Name"] + " " + row["Last Name"]) : "";
+    //row["Volunteer Name"] =  (row["Last Name"]) ? ('<span style="display:none;">' + row["Last Name"] + '</span>' + row["First Name"] + " " + row["Last Name"]) : "";
+    row["Volunteer Name"] =  (row["Last Name"]) ? (row["Last Name"] + ', ' + row["First Name"]) : "";
     if(row['Email']) {
-      row["Contact"]  = row["Email"] + (row["Phone Number"] ? ("<br>" + row["Phone Number"]) : "");
+      row["Contact"]  = row["Email"] + (row["Phone Number"] ? (" <br>" + row["Phone Number"]) : "");
     } else {
       row["Contact"]  = "<span class='need'> volunteer needed</span>";
     }
     row["Shift Start"]    =  (row["Shift start date"]) ? (myDate(row["Shift start date"] + " " + row["Shift start time"])) : "";
     row["Shift End"]      =  (row["Shift end date"])   ? (myDate(row["Shift end date"]   + " " + row["Shift end time"])) : "";
+    //row["Shift Start"]    =  (row["Shift start date"]) ? ((row["Shift start date"] + " " + row["Shift start time"])) : "";
+    //row["Shift Start-secs"]    =  (row["Shift start date"]) ? (new Date(row["Shift start date"] + " " + row["Shift start time"]).valueOf()) : "";
+    //row["Shift End"]      =  (row["Shift end date"])   ? ((row["Shift end date"]   + " " + row["Shift end time"])) : "";
+    
     if(row["Signup Date"]) {
       row["Signup Date"] += " " + row["Signup Time"];
     }
@@ -51,9 +65,10 @@ function tablify(data) {
   const keeps = [
     //"Event",
     "Job",
-    "Job Description",
-    "Shift Description",
-    "Job Location",
+    //"Job Description",
+    //"Shift Description",
+    //"Job Location",
+    //"Shift Start-secs",
     "Shift Start",
     "Shift End",
     //"Shift start date",
@@ -64,11 +79,11 @@ function tablify(data) {
     "Contact",
     //"Email",
     //"Phone Number",
-    "Checked In (via app)",
-    "Checked In",
-    "Checked Out (via app)",
-    "Checked Out",
-    "Confirmed",
+    //"Checked In (via app)",
+    //"Checked In",
+    //"Checked Out (via app)",
+    //"Checked Out",
+    //"Confirmed",
     //"Disclaimer",
     //"Job Rate",
     //"Parent ID",
@@ -98,12 +113,11 @@ function tablify(data) {
   return({columns: columns, data: data});
 }
 
-function mogrify(data) {
-  // morg into this:
+function timelineify(data) {
+  // mogrify  into this:
   // http://visjs.org/docs/timeline/#Example
   //var id = 0;
   var items = [];
-  //console.log("data=" + JSON.stringify(data));
   var jobs = Array.from(new Set(data.map(row => {return row.Job}))).sort((a, b) => a.localeCompare(b)); // unique list of jobs
 
   data.map(row => {
@@ -130,7 +144,11 @@ function mogrify(data) {
   items.map(row=>days.add(theDay(row.start)))
   items.map(row=>days.add(theDay(row.end))) // not needed since the events are all single day
 
-  jid = 0;
+  const jbgi = makeJobSlotBackgroundItems(data);
+  const dbgi = makeDayBackgroundItems(days);
+  items = items.concat(jbgi, dbgi);
+
+  var jobid = 0;
   var groups = [],
       wanttot = 0,
       havetot = 0;
@@ -141,14 +159,13 @@ function mogrify(data) {
     wanttot += want;
     havetot += have;
     groups.push({
-      className: "job" + jid + (jid%2 ? " oddrow" : " evenrow"),
+      className: "job" + jobid + (jobid%2 ? " oddrow" : " evenrow"),
       content: job + "<br><br>" + have + " of " + want + " positions filled.<br>" + (want-have) + " still needed.",
-      id: jid++,
+      id: jobid++,
       visible: true
     });
   });
 
-  const oneday    = 24*60*60*1000;
   const firstTime = theDay(getMinDate(items, "start"));
   const lastTime  = theDay(getMaxDate(items, "end"));
 
@@ -192,13 +209,54 @@ function getMaxDate(arr, prop) {
   return max;
 }
 
-var filterInt = function(value) {
-    return Number(value);
-  return NaN;
+function uniq(a) {
+  var keys = new Set();
+  return a.filter(function(row) {
+    var key  = Object.entries(row).sort().toString();
+    var uniq = !keys.has(key);
+    keys.add(key);
+    return uniq;
+  });
 }
 
-const dataFile = path.join('data', 'data.tsv'); // required to be a complete url. :/
-//const url = 'http://localhost:9004/swsdvolcal/data/data.tsv'; // required to be a complete url. :/
+function makeJobSlotBackgroundItems(data) {
+  var ret = [];
+  var id = 0;
+  data.map(row => {
+    ret.push({
+      start:   ((row["Shift start date"]) ? (row["Shift start date"] + " " + row["Shift start time"]) : ""),
+      end:     ((row["Shift end date"])   ? (row["Shift end date"]   + " " + row["Shift end time"])   : "")
+    })
+  });
+  ret = uniq(ret);
+  ret.map(d => {
+    //d.className   = "noQtips Set3 q" + (id % 12) + "-12"; //
+    //d.className   = "noQtips Set3 q" + (4 % 12) + "-12"; // this just happens to be blue. cool.
+    //d.content = "your mother";
+    d.id      = "bgid-" + id++; 
+    d.type    = "background";
+  })
+  return ret;
+}
+
+function makeDayBackgroundItems(data) {
+  var ret = [], id = 0;
+  Array.from(data).sort().forEach(k=> {
+    ret.push({
+      className: "noQtips PRGn q" + ((id % 2)*2) + "-3",
+      content:   "id:" + id + ", q" + ((id % 2)*2) + "-3",
+      end:       k+oneday,
+      id:        "day"+k,
+      start:     k,
+      type:      "background"
+    });
+    id++;
+  });
+  return ret;
+}
+
+// read info in once at startup.
+const dataFile = path.join('data', 'data.tsv'); 
 fs.readFile(dataFile, 'utf8', (err, data) => {
   if (err) throw err;
   rawData = tsvParse(data);

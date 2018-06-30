@@ -30,6 +30,7 @@ app.use(cookieParser());
 // includes
 app.use('/swsdvolcal/vis', express.static(path.join(__dirname, 'node_modules', 'vis', 'dist')));
 app.use('/swsdvolcal/css', express.static(path.join(__dirname, 'public', 'css')));
+app.use('/swsdvolcal/html', express.static(path.join(__dirname, 'public', 'html')));
 app.use('/swsdvolcal/js',  express.static(path.join(__dirname, 'public', 'js')));
 
 // routes

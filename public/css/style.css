@@ -21,15 +21,11 @@ body {
 .evenrow {
   background: rgba(191, 191, 191, 0.15);
 }
-
 .oddrow {
   background: rgba(225, 225, 225, 0.15);
 }
 
-.needabody {
-  background: salmon;
-}
-
+/*
 .vis-panel.vis-background.vis-vertical .vis-time-axis .vis-grid.vis-even {
   background: #EEF;
 }
@@ -37,6 +33,7 @@ body {
 .vis-time-axis .vis-grid.vis-odd {
   background: #EFF;
 }
+*/
 
 .vis-label {
   opacity: 1;
@@ -50,3 +47,84 @@ body {
   z-index: 9999;
 }
 
+.needabody {
+  background: salmon;
+}
+
+div.buttdiv {
+  margin: 10px 0px;
+  padding: 0px 5px;
+}
+
+div.dataTables_wrapper {
+  display: grid;
+  grid-gap: 20px;
+  grid-auto-rows: minmax(auto, auto);
+}
+
+div.dt-buttons {
+  /*
+  border: thin solid;
+  background: rgba(0, 0, 0, 0.05);
+  */
+  grid-row: 1;
+}
+
+/* Head Of Table */
+div.hot { 
+  grid-row: 2;
+}
+
+#thetable {
+  grid-row: 3;
+}
+
+span.timesort {
+  display:none;
+}
+
+.timefield {
+  position: relative;
+  display: inline-block;
+/*
+  border-bottom: 1px dotted black;
+*/
+}
+
+.timefield .hovertext {
+  visibility: hidden;
+  /*
+  width: 120px;
+  margin-left: -60px;
+  left: 150%;
+  */
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+}
+
+.timefield .hovertext::after {
+  content: "";
+  position: absolute;
+  /*
+  top: 100%;
+  left: 50%;
+  */
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.timefield:hover .hovertext {
+  visibility: visible;
+  opacity: 1;
+}

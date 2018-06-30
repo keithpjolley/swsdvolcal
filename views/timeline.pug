@@ -3,10 +3,12 @@ extends layout
 block header
   link(type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/basic/jquery.qtip.min.css")
   link(type="text/css" rel="stylesheet" href="/swsdvolcal/vis/vis.css")
+  link(type="text/css" rel="stylesheet" href="/swsdvolcal/css/colorbrewer.css")
 
 block content
   p#neededyet 
   br
+  // (.Set3 is for colorbrewer)
   #timeline
     .menu
       input#zoomIn(type="button", value="Zoom in")
@@ -60,7 +62,7 @@ block content
     |   data.options["groupOrder"] = 'content';  // add to our options. groupOrder can be a property name or a sorting function
     |   data.options["orientation"] = {axis: 'both'};  // add to our options. groupOrder can be a property name or a sorting function
     |   data.options["onInitialDrawComplete"] = function() {
-    |     $( "div.vis-item" ).qtip({
+    |     $("div.vis-item").not(".noQtips").qtip({
     |       content: {
     |         text: function(event, api) { 
     |           // this seems like a lot of work to get this info. :/

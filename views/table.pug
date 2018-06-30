@@ -3,16 +3,23 @@ extends layout
 block header
   link(rel="stylesheet", href="/swsdvolcal/css/datatables.min.css")
   script(src="/swsdvolcal/js/datatables.min.js")
+  // script(src="https://code.jquery.com/jquery-3.3.1.js")
+  // script(src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js")
+  // script(src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js")
+  script(src="/swsdvolcal/js/buttons.flash.min.js")
+  script(src="/swsdvolcal/js/jszip.min.js")
+  script(src="/swsdvolcal/js/pdfmake.min.js")
+  script(src="/swsdvolcal/js/vfs_fonts.js")
+  script(src="/swsdvolcal/js/buttons.html5.min.js")
+  script(src="/swsdvolcal/js/buttons.print.min.js")
 
 block content
   p#neededyet 
   br
-  p.toggle Toggle columns:
   table.display#thetable
   script
     | $('<div class="loading">...Loading DataTables...</div>').appendTo('body');
-    | const url = "/swsdvolcal/getdata/0";
-    | fetch(url, {credentials: "include"})
+    | fetch("/swsdvolcal/getdata/0", {credentials: "include"})
     |   .then(response => response.json()) // start fetching data right away but wait until doc is loaded to start building
     |   .then(json     => {$(document).ready(loadTable(json)); return json;})
     |   .catch(err     => console.error(err));
@@ -22,8 +29,14 @@ block content
     |   data['initComplete'] = function(settings, json) {
     |     $('div.loading').remove();
     |   }
-    |   data['buttons'] = [ 'columnsToggle' ];
-    |   data['lengthMenu'] = [ [-1, 25, 50, 100], ["All", 25, 50, 100] ];
+    |   data['buttons'] = [ 'columnsToggle', 'copy', 'csv', 'excel', 'pdf' ];
     |   data['dom'] = 'Blfrtip';
+    |   data['lengthMenu'] = [[-1, 25, 50, 100], ["All", 25, 50, 100]];
+    |   data['order'] = [[1, 'asc'], [3, 'asc']],
     |   $("#thetable").DataTable(data);
+    |   $("button.buttons-columnVisibility").wrapAll("<div class='divdtcv buttdiv'></div>");
+    |   $("button.buttons-html5").wrapAll("<div class='divbh5 buttdiv'></div>");
+    |   $("div.divdtcv").prepend("<p>Toggle Columns:<br></p>");
+    |   $("div.divbh5").prepend("<p>Export Data:<br></p>");
+    |   $("div.dataTables_length, div.dataTables_filter").wrapAll("<div class='hot'></div>");
     | };

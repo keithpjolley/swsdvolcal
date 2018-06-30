@@ -78,4 +78,4 @@ echo "${date}" > views/current.txt  # this shows how current the data is
 
 # To create 10 random entries:
 # % n=10;(awk 'NR==1{print;exit}' ./data/data.tsv;(while [ $n -gt 0 ];do let n=$n-1;awk 'NR>1' ./data/data.tsv|randomfile;done)|sort -u) > ./data/data-$n.tsv
-# % [ $(basename $(pwd)) = "swsdvolcal" ] && rsync --delete -avP --exclude=node_modules/ $(pwd)/ ec2-user@altgnat.com:/usr/share/nginx/node/swsdvolcal/
+# % [ $(basename $(pwd)) = "swsdvolcal" ] && rsync --delete -avP --exclude=node_modules/ --exclude=.git/ --exclude=\*.swp $(pwd)/ ec2-user@altgnat.com:/usr/share/nginx/node/swsdvolcal/
