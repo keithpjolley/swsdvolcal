@@ -4,7 +4,7 @@ const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const basicAuth = require('express-basic-auth');
+//const basicAuth = require('express-basic-auth'); // removed auth after data anon'd
 
 const getdata = require(path.join(__dirname, 'routes', 'getdata'));
 const index   = require(path.join(__dirname, 'routes', 'index'));
@@ -15,7 +15,7 @@ const cred    = require(path.join(__dirname, 'credentials'));
 var app = express();
 
 app.use(helmet());
-app.use(basicAuth(cred));
+//app.use(basicAuth(cred));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -29,9 +29,7 @@ app.use(cookieParser());
 
 // includes
 app.use('/swsdvolcal/vis', express.static(path.join(__dirname, 'node_modules', 'vis', 'dist')));
-app.use('/swsdvolcal/css', express.static(path.join(__dirname, 'public', 'css')));
-app.use('/swsdvolcal/html', express.static(path.join(__dirname, 'public', 'html')));
-app.use('/swsdvolcal/js',  express.static(path.join(__dirname, 'public', 'js')));
+app.use('/swsdvolcal', express.static(path.join(__dirname, 'public')));
 
 // routes
 app.use('/swsdvolcal/getdata', getdata);

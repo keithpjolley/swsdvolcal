@@ -244,7 +244,7 @@ function makeDayBackgroundItems(data) {
   Array.from(data).sort().forEach(k=> {
     ret.push({
       className: "noQtips PRGn q" + ((id % 2)*2) + "-3",
-      content:   "id:" + id + ", q" + ((id % 2)*2) + "-3",
+      content:   "", //"id:" + id + ", q" + ((id % 2)*2) + "-3",
       end:       k+oneday,
       id:        "day"+k,
       start:     k,

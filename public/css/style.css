@@ -1,5 +1,5 @@
 body {
-  background: aliceblue;
+  background: repeat url("/swsdvolcal/images/bg-blue.jpeg") aliceblue; /**/
   color: #222;
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -11,7 +11,7 @@ body {
 
 #timeline {
   position: relative;
-  background: white;
+  background-color: rgba(255, 255, 255, 0.25);
 }
 
 .vis-labelset {
@@ -75,8 +75,13 @@ div.hot {
   grid-row: 2;
 }
 
-#thetable {
-  grid-row: 3;
+div.dataTables_wrapper {
+  border: solid thin rgba(0, 0, 0, 0.05);
+}
+
+table#thetable {
+  background-color: rgba(0, 0, 0, 0.05);
+  /*grid-row: 3; */
 }
 
 span.timesort {
@@ -86,18 +91,10 @@ span.timesort {
 .timefield {
   position: relative;
   display: inline-block;
-/*
-  border-bottom: 1px dotted black;
-*/
 }
 
 .timefield .hovertext {
   visibility: hidden;
-  /*
-  width: 120px;
-  margin-left: -60px;
-  left: 150%;
-  */
   background-color: #555;
   color: #fff;
   text-align: center;
@@ -114,10 +111,6 @@ span.timesort {
 .timefield .hovertext::after {
   content: "";
   position: absolute;
-  /*
-  top: 100%;
-  left: 50%;
-  */
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
@@ -127,4 +120,22 @@ span.timesort {
 .timefield:hover .hovertext {
   visibility: visible;
   opacity: 1;
+}
+
+table.dataTable.stripe tbody tr.odd, table.dataTable.display tbody tr.odd {
+  background-color: #e0f0ff;
+}
+
+table.dataTable.display tbody tr.odd>.sorting_1, table.dataTable.order-column.stripe tbody tr.odd>.sorting_1 {
+  background-color: #d8e8ff;
+}
+
+table.dataTable.display tbody tr.odd>.sorting_2, table.dataTable.order-column.stripe tbody tr.odd>.sorting_2 {
+  background-color: #d8e8ff;
+}
+
+div.vis-item-overflow > div.vis-item-content {
+  font: 10px "Lucida Grande", Helvetica, Arial, sans-serif;
+  padding-bottom: 1px;
+  padding-top: 1px;
 }

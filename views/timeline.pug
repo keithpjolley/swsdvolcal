@@ -60,6 +60,7 @@ block content
     |
     | function drawTimeline(data) {
     |   data.options["groupOrder"] = 'content';  // add to our options. groupOrder can be a property name or a sorting function
+    |   data.options["margin"] = {item: {vertical: 1}};  // vertical spacing between each item - default is 10(px)
     |   data.options["orientation"] = {axis: 'both'};  // add to our options. groupOrder can be a property name or a sorting function
     |   data.options["onInitialDrawComplete"] = function() {
     |     $("div.vis-item").not(".noQtips").qtip({
