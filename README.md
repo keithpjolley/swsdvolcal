@@ -1,8 +1,9 @@
 # Express Timeline Visualization for VolunteerLocal data
-
+<pre>
 keith p jolley (c)
 Sun Jul  1 11:37:59 PDT 2018
 squalor heights, ca, usa
+</pre>
 
 ### What's it?
 It's a tool to complement what [VolunteerLocal](https://volunteerlocal.com) provides to an event organizer.
