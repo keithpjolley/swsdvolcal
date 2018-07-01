@@ -8,7 +8,7 @@ squalor heights, ca, usa
 ### What's it?
 It's a tool to complement what [VolunteerLocal](https://volunteerlocal.com) provides to an event organizer.
 I recently helped coordinate ~500 volunteers over a weeklong event and had a couple of needs
-that were not being met. In particular I needed an overview of when/where I had people signed
+that were not being met out of the box. In particular I needed an overview of when/where I had people signed
 up and where we still needed to recruit more folks. Then, as we got closer to the day of we
 needed a way of knowing exactly who was supposed to be where and when, plus a way of seeing 
 where we still had holes in the schedule.
@@ -23,7 +23,7 @@ I used the [timeline](http://visjs.org/docs/timeline) javascript library.
 For the [detailed view](https://www.altgnat.com/swsdvolcal/table) I used [DataTables](https://datatables.net/). DataTables has a [JQuery](https://api.jquery.com/)
 dependency so I used it a bit on formatting and what-not.
 
-#### table
+#### table:
 ![picture of the swsd volunteer calendar table site](https://raw.githubusercontent.com/keithpjolley/swsdvolcal/master/public/images/table.jpeg)
 
 
@@ -64,4 +64,15 @@ To create 10(or fewer) random entries to help with debug:
 $ n=10;(head -1 ./data/data.tsv;(while [ $n -gt 0 ];do let n=$n-1;awk 'NR>1' ./data/data.tsv|randomfile;done)|sort -u) > ./data/data-$n.tsv
 ```
 
+To run as a service:
+```sh
+$ cp bin/swsdvolcal /etc/init.d/
+$ sudo /etc/init.d/swsdvolcal start
+```
+The init script relies on the handy `[forever](https://www.npmjs.com/package/forever)` npm module
+(and I know the init script is ugly).
 
+I included the script `bin/anon.py`, which uses `bin/names.txt` to remove the contact info of our volunteers. In
+'production' I used the npm `[express-basic-auth](https://www.npmjs.com/package/express-basic-auth)` module to read `credentials.js`.
+Auth is commented out now but use `credentials.example.js` as a template. Your volunteers would probably not like their contact
+info going out into the wild.
